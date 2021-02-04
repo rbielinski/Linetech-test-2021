@@ -27,9 +27,9 @@ Choose a method of communication, that is available in ROS (Robot Operating Syst
 If you cannot answer some of the above questions, don’t worry. We will consider each replay sent.
 
 
-Good luck
 
-LT Team
+Good luck
+*LT Team*
 
 
 
