@@ -15,6 +15,33 @@ using namespace std;
 double avg;
 double med;
 
+// define functions for threads 1 and 2
+void average(vector<int> numbers) {
+	int total = 0;
+	for (size_t i = 0; i < numbers.size(); i++) {
+		total += numbers[i];
+	}
+	avg = double(total) / (numbers.size());
+}
+
+void median(vector<int> numbers) {
+	// if dataset is even, the median is the mean of the two middle values:
+	if (numbers.size() % 2 == 0) {
+		const auto mid_iter1 = numbers.begin() + numbers.size() / 2;
+		const auto mid_iter2 = numbers.begin() + numbers.size() / 2 - 1;
+		nth_element(numbers.begin(), mid_iter1, numbers.end());
+		const auto mid1 = *mid_iter1;
+		nth_element(numbers.begin(), mid_iter2, numbers.end());
+		const auto mid2 = *mid_iter2;
+		med = (double(mid1) + double(mid2)) / 2;
+	}
+	else {
+		const auto mid_iter = numbers.begin() + numbers.size() / 2;
+		nth_element(numbers.begin(), mid_iter, numbers.end());
+		med = *mid_iter;
+	}
+}
+
 int main() {
 	vector <int> dataset;
 	dataset.reserve(10000);
@@ -23,8 +50,7 @@ int main() {
 	ifstream input("data.txt");
 	if (input.is_open()) {
 		int number;
-		while (!input.eof()) {
-			input >> number;
+		while (input >> number) {
 			dataset.push_back(number);
 		}
 	}
@@ -42,8 +68,10 @@ int main() {
 	thread th2(median, datasetCopy);
 	th1.join();
 	th2.join();
-
+	
 	// compare the returned values and output the result
+	cout << "Median: " << med << endl;
+	cout << "Average: " << avg << endl;
 	if (avg > med) {
 		cout << "The arithmetic average is bigger than the median." << endl;
 	}
@@ -51,39 +79,7 @@ int main() {
 		cout << "The median is bigger than the arithmetic average." << endl;
 	}
 	else {
-		cout << "The arithmetic average and the median are equal."
+		cout << "The arithmetic average and the median are equal." << endl;
 	}
 	return 0;
-}
-
-// define functions for threads 1 and 2
-void average(vector<int> numbers) {
-	int total = 0;
-	
-	for (int i = 0; i < numbers.size(); i++) {
-		total += numbers[i];
-	}
-
-	avg = total / numbers.size();
-}
-
-void median(vector<int> numbers) {
-	// need to solve the issue of this thread manipulating the dataset
-	// if dataset is even, the median is the mean of the two middle values:
-	if (numbers.size() % 2 == 0) {
-		int mid_iter1, mid_iter2, mid1, mid2;
-		mid_iter1 = numbers.begin() + numbers.size() / 2;
-		mid_iter2 = mid_iter1 - 1;
-		nth_element(numbers.begin(), mid_iter1, numbers.end());
-		mid1 = numbers[mid_iter1];
-		nth_element(numbers.begin(), mid_iter2, numbers.end());
-		mid2 = numbers[mid_iter2];
-		med = (mid1 + mid2) / 2;
-	}
-	else {
-		int mid_iter;
-		mid_iter = numbers.begin() + numbers.size() / 2;
-		nth_element(numbers.begin(), mid_iter, numbers.end());
-		med = numbers[mid_iter];
-	}
 }
